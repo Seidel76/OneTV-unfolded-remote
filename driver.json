@@ -1,0 +1,96 @@
+{
+  "driver_id": "onetv",
+  "version": "0.1.0",
+  "min_core_api": "0.20.0",
+  "name": {
+    "en": "OneTV",
+    "fr": "OneTV"
+  },
+  "icon": "uc:tv",
+  "description": {
+    "en": "Control the OneTV Connect app running on Apple TV or iOS: zapping, transport, sources, audio and subtitle tracks.",
+    "fr": "Pilote l'application OneTV Connect sur Apple TV ou iOS : zapping, transport, sources, pistes audio et sous-titres."
+  },
+  "developer": {
+    "name": "OneTV Connect",
+    "email": "contact@onetvconnect.com",
+    "url": "https://onetvconnect.com"
+  },
+  "home_page": "https://onetvconnect.com",
+  "port": 9090,
+  "release_date": "2026-08-12",
+  "setup_data_schema": {
+    "title": {
+      "en": "OneTV setup",
+      "fr": "Configuration OneTV"
+    },
+    "settings": [
+      {
+        "id": "info",
+        "label": {
+          "en": "Discovery",
+          "fr": "Découverte"
+        },
+        "field": {
+          "label": {
+            "value": {
+              "en": "Leave the address empty to auto-discover OneTV on the local network (mDNS `_noopytv._tcp`). The app must be running and its HTTP remote API enabled.",
+              "fr": "Laissez l'adresse vide pour détecter OneTV automatiquement sur le réseau local (mDNS `_noopytv._tcp`). L'application doit tourner, API télécommande HTTP activée."
+            }
+          }
+        }
+      },
+      {
+        "id": "host",
+        "label": {
+          "en": "IP address (optional)",
+          "fr": "Adresse IP (facultatif)"
+        },
+        "field": {
+          "text": {
+            "value": ""
+          }
+        }
+      },
+      {
+        "id": "port",
+        "label": {
+          "en": "Port",
+          "fr": "Port"
+        },
+        "field": {
+          "number": {
+            "value": 8765,
+            "min": 1,
+            "max": 65535,
+            "steps": 1
+          }
+        }
+      },
+      {
+        "id": "api_key",
+        "label": {
+          "en": "API key (optional)",
+          "fr": "Clé d'API (facultatif)"
+        },
+        "field": {
+          "text": {
+            "value": ""
+          }
+        }
+      },
+      {
+        "id": "all_channels_as_sources",
+        "label": {
+          "en": "List all channels as sources (not just favourites)",
+          "fr": "Lister toutes les chaînes dans les sources (pas seulement les favoris)"
+        },
+        "field": {
+          "checkbox": {
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+}
