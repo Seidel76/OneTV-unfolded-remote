@@ -55,7 +55,15 @@ class RemoteClient {
     });
   }
 
-  async waitEvent(predicate, timeoutMs = 15000) {
+  /**
+   * ⚠️ `fromNow` est indispensable quand on rejoue une action déjà faite : sinon
+   * l'événement de la PREMIÈRE exécution est encore dans la file et le test continue
+   * avant que la seconde ait abouti (faux échec très convaincant).
+   */
+  async waitEvent(predicate, timeoutMs = 15000, fromNow = false) {
+    if (fromNow) {
+      this.events.length = 0;
+    }
     const existing = this.events.find(predicate);
     if (existing) {
       return existing;
@@ -257,9 +265,9 @@ async function run() {
     let node = await browse(30, "");
     let titles = (node.items || []).map((entry) => entry.title);
     check(
-      "racine = Favoris / Chaînes / Films / Séries / Reprendre",
+      "racine en anglais par défaut",
       JSON.stringify(titles) ===
-        JSON.stringify(["Favoris", "Chaînes par catégorie", "Films", "Séries", "Reprendre"]),
+        JSON.stringify(["Favorites", "Channels by category", "Movies", "TV shows", "Continue watching"]),
       JSON.stringify(titles)
     );
 
@@ -276,7 +284,7 @@ async function run() {
     check(
       "catégories de chaînes + panier sans catégorie",
       JSON.stringify((node.items || []).map((entry) => entry.title)) ===
-        JSON.stringify(["FRANCE FHD", "CINÉMA", "Sans catégorie"]),
+        JSON.stringify(["FRANCE FHD", "CINÉMA", "Uncategorized"]),
       JSON.stringify((node.items || []).map((entry) => entry.title))
     );
 
@@ -352,6 +360,32 @@ async function run() {
       "pagination respectée",
       (node.items || []).length === 1 && node.items[0].title === "TF1",
       JSON.stringify((node.items || []).map((entry) => entry.title))
+    );
+
+    console.log("→ langue française optionnelle");
+    // Le setup est rejoué avec `language: fr` : les libellés doivent basculer sans
+    // toucher aux identifiants (`media_id` reste stable, c'est de la donnée).
+    remote.events.length = 0;
+    await remote.request(50, "setup_driver", {
+      driver_id: "onetv",
+      setup_data: { host: "127.0.0.1", port: String(FAKE_PORT), api_key: "", language: "fr" }
+    });
+    await remote.waitEvent(
+      (data) => data.msg === "driver_setup_change" && ["OK", "ERROR"].includes(data.msg_data.state),
+      15000
+    );
+    node = await browse(51, "");
+    check(
+      "libellés en français quand demandé",
+      JSON.stringify((node.items || []).map((entry) => entry.title)) ===
+        JSON.stringify(["Favoris", "Chaînes par catégorie", "Films", "Séries", "Reprendre"]),
+      JSON.stringify((node.items || []).map((entry) => entry.title))
+    );
+    check(
+      "identifiants inchangés par la langue",
+      JSON.stringify((node.items || []).map((entry) => entry.media_id)) ===
+        JSON.stringify(["favorites", "channels", "movies", "series", "resume"]),
+      JSON.stringify((node.items || []).map((entry) => entry.media_id))
     );
 
     console.log("→ lecture depuis le navigateur");

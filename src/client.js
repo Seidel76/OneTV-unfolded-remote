@@ -24,7 +24,8 @@ class OneTVClient {
     apiKey = null,
     deviceId = null,
     name = "OneTV",
-    favoritesOnly = false
+    favoritesOnly = false,
+    language = "en"
   }) {
     this.host = host;
     this.port = port;
@@ -34,6 +35,8 @@ class OneTVClient {
     // Limite la liste des sources aux favoris : 843 chaînes sont injouables au doigt
     // sur l'écran de la Remote.
     this.favoritesOnly = favoritesOnly;
+    // Langue des libellés d'écran (navigateur, pages d'UI) — choisie au setup.
+    this.language = language;
 
     this.base = `http://${host}:${port}`;
 

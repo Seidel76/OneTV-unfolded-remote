@@ -21,6 +21,7 @@ const {
 const { OneTVConnectionError, OneTVError } = require("./client");
 const { CMD, SEEK_STEP_SECONDS, SIMPLE_COMMANDS, VOLUME_STEP } = require("./const");
 const favorites = require("./favorites");
+const { strings } = require("./i18n");
 const mediaPlayer = require("./mediaPlayer");
 
 const entityId = (client) => `remote.${client.uniqueId}`;
@@ -57,6 +58,7 @@ function buttonMapping() {
  * les sources et `FAVORITE_NEXT`).
  */
 function favoritePages(client) {
+  const t = strings(client);
   const entries = favorites.entries(client);
   const perPage = 20;
   const total = Math.ceil(entries.length / perPage);
@@ -66,7 +68,7 @@ function favoritePages(client) {
     const index = pages.length + 1;
     const page = new UiPage(
       `onetv_fav_${index}`,
-      total > 1 ? `Favoris ${index}/${total}` : "Favoris",
+      total > 1 ? t.pageFavoritesNumbered(index, total) : t.pageFavorites,
       new Size(4, 6)
     );
     entries.slice(start, start + perPage).forEach((entry, position) => {
@@ -94,15 +96,16 @@ function uiPages(client) {
   page.add(createUiIcon("uc:stop", 3, 1, cmd("STOP")));
   page.add(createUiText("⟲ 30", 0, 3, cmd("SEEK_BACKWARD_30"), new Size(2, 1)));
   page.add(createUiText("30 ⟳", 2, 3, cmd("SEEK_FORWARD_30"), new Size(2, 1)));
-  page.add(createUiText("Direct", 0, 4, cmd("BACK_TO_LIVE"), new Size(4, 1)));
-  page.add(createUiText("Audio", 0, 5, cmd("AUDIO_TRACK_NEXT"), new Size(2, 1)));
-  page.add(createUiText("Sous-titres", 2, 5, cmd("SUBTITLE_TRACK_NEXT"), new Size(2, 1)));
+  const t = strings(client);
+  page.add(createUiText(t.live, 0, 4, cmd("BACK_TO_LIVE"), new Size(4, 1)));
+  page.add(createUiText(t.audio, 0, 5, cmd("AUDIO_TRACK_NEXT"), new Size(2, 1)));
+  page.add(createUiText(t.subtitles, 2, 5, cmd("SUBTITLE_TRACK_NEXT"), new Size(2, 1)));
   return [page, ...favoritePages(client)];
 }
 
 function build(client, cmdHandler) {
   const { commands } = favorites.buildCommands(client);
-  return new Remote(entityId(client), `${client.name} télécommande`, {
+  return new Remote(entityId(client), strings(client).remoteName(client.name), {
     features: [Features.OnOff, Features.SendCmd],
     attributes: attributes(client),
     simpleCommands: [...SIMPLE_COMMANDS, ...commands],

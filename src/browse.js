@@ -23,6 +23,7 @@ const {
 
 const { CMD } = require("./const");
 const favorites = require("./favorites");
+const { strings } = require("./i18n");
 const { isChannelNameValid } = require("./naming");
 
 // Le catalogue VOD complet pèse ~0,5 Mo : il n'est lu qu'à la demande, et gardé un
@@ -154,14 +155,15 @@ function cleanTitle(name) {
 // -------------------------------------------------------------------- écrans
 
 function rootScreen(client, paging) {
+  const t = strings(client);
   const entries = [
-    folder("favorites", "Favoris", { thumbnail: "icon://uc:star" }),
-    folder("channels", "Chaînes par catégorie", { thumbnail: "icon://uc:tv" }),
-    folder("movies", "Films", { media_type: MediaType.Movie, thumbnail: "icon://uc:movie" }),
-    folder("series", "Séries", { media_type: MediaType.TvShow, thumbnail: "icon://uc:tv" }),
-    folder("resume", "Reprendre", { thumbnail: "icon://uc:play" })
+    folder("favorites", t.favorites, { thumbnail: "icon://uc:star" }),
+    folder("channels", t.channels, { thumbnail: "icon://uc:tv" }),
+    folder("movies", t.movies, { media_type: MediaType.Movie, thumbnail: "icon://uc:movie" }),
+    folder("series", t.series, { media_type: MediaType.TvShow, thumbnail: "icon://uc:tv" }),
+    folder("resume", t.resume, { thumbnail: "icon://uc:play" })
   ];
-  return result(folder("root", "OneTV"), entries, paging);
+  return result(folder("root", t.root), entries, paging);
 }
 
 /**
@@ -206,7 +208,7 @@ async function ensureChannels(client) {
 async function favoritesScreen(client, paging) {
   const now = await nowIndex(client);
   const items = favorites.usable(client).map((channel) => channelItem(channel, undefined, now));
-  return result(folder("favorites", "Favoris"), items, paging);
+  return result(folder("favorites", strings(client).favorites), items, paging);
 }
 
 async function channelCategoriesScreen(client, paging) {
@@ -216,9 +218,10 @@ async function channelCategoriesScreen(client, paging) {
     return (payload && payload.categories) || [];
   });
 
+  const t = strings(client);
   const items = categories.map((category) =>
     folder(`channels:${category.name}`, String(category.name), {
-      subtitle: category.channels_count ? `${category.channels_count} chaînes` : undefined
+      subtitle: category.channels_count ? t.channelCount(category.channels_count) : undefined
     })
   );
 
@@ -229,11 +232,11 @@ async function channelCategoriesScreen(client, paging) {
   );
   if (orphans.length) {
     items.push(
-      folder(UNCATEGORIZED_ID, "Sans catégorie", { subtitle: `${orphans.length} chaînes` })
+      folder(UNCATEGORIZED_ID, t.uncategorized, { subtitle: t.channelCount(orphans.length) })
     );
   }
 
-  return result(folder("channels", "Chaînes par catégorie"), items, paging);
+  return result(folder("channels", t.channels), items, paging);
 }
 
 async function channelsOfCategoryScreen(client, category, paging) {
@@ -248,7 +251,7 @@ async function channelsOfCategoryScreen(client, category, paging) {
       return uncategorized ? !channel.category : String(channel.category || "") === category;
     })
     .map((channel) => channelItem(channel, category, now));
-  const title = uncategorized ? "Sans catégorie" : category;
+  const title = uncategorized ? strings(client).uncategorized : category;
   return result(folder(`channels:${category}`, title), items, paging);
 }
 
@@ -263,11 +266,8 @@ async function vodCategoriesScreen(client, kind, paging) {
       subtitle: category[countKey] ? `${category[countKey]}` : undefined
     })
   );
-  return result(
-    folder(kind, kind === "movies" ? "Films" : "Séries"),
-    items,
-    paging
-  );
+  const t = strings(client);
+  return result(folder(kind, kind === "movies" ? t.movies : t.series), items, paging);
 }
 
 async function vodCategoryScreen(client, kind, categoryId, paging) {
@@ -294,7 +294,8 @@ async function vodCategoryScreen(client, kind, categoryId, paging) {
         })
   );
 
-  const title = cleanTitle(payload.categoryName) || (kind === "movies" ? "Films" : "Séries");
+  const t = strings(client);
+  const title = cleanTitle(payload.categoryName) || (kind === "movies" ? t.movies : t.series);
   return result(folder(`${kind}:${categoryId}`, title), entries, paging);
 }
 
@@ -322,7 +323,11 @@ async function episodesScreen(client, seriesId, paging) {
     });
   });
 
-  return result(folder(`serie:${seriesId}`, cleanTitle(payload.name) || "Épisodes"), items, paging);
+  return result(
+    folder(`serie:${seriesId}`, cleanTitle(payload.name) || strings(client).episodes),
+    items,
+    paging
+  );
 }
 
 async function resumeScreen(client, paging) {
@@ -342,7 +347,7 @@ async function resumeScreen(client, paging) {
       duration: entry.duration ? Math.round(entry.duration) : undefined
     });
   });
-  return result(folder("resume", "Reprendre"), items, paging);
+  return result(folder("resume", strings(client).resume), items, paging);
 }
 
 // ------------------------------------------------------------------ routage

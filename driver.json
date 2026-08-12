@@ -80,6 +80,22 @@
         }
       },
       {
+        "id": "language",
+        "label": {
+          "en": "Language of the media browser",
+          "fr": "Langue du navigateur de médias"
+        },
+        "field": {
+          "dropdown": {
+            "value": "en",
+            "items": [
+              { "id": "en", "label": { "en": "English", "fr": "Anglais" } },
+              { "id": "fr", "label": { "en": "French", "fr": "Français" } }
+            ]
+          }
+        }
+      },
+      {
         "id": "all_channels_as_sources",
         "label": {
           "en": "List all channels as sources (not just favourites)",

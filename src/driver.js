@@ -44,7 +44,8 @@ async function addDevice(config, seedFavorites) {
     apiKey: config.apiKey,
     deviceId: config.deviceId,
     name: config.name,
-    favoritesOnly: config.favoritesOnly !== false
+    favoritesOnly: config.favoritesOnly !== false,
+    language: config.language || "en"
   });
 
   // ⚠️ Les commandes `FAV_*` et les pages « Favoris » sont figées à la CRÉATION de
@@ -59,11 +60,19 @@ async function addDevice(config, seedFavorites) {
   client.onUpdate(() => pushAttributes(client));
   clients.set(config.identifier, client);
 
+  // ⚠️ NE PAS retirer les entités CONFIGURÉES pour les republier : la Remote garde son
+  // abonnement, et l'entité retirée répond 404 à toute commande. Les entités déjà
+  // publiées restent donc en place ; ce sont leurs données qui doivent suivre, d'où la
+  // résolution du client à chaque appel (`clientFor`) plutôt qu'une capture.
   api.addAvailableEntity(
-    mediaPlayer.build(client, async (entity, cmdId, params) => {
-      const target = clientFor(entity.id);
-      return target ? mediaPlayer.handleCommand(target, cmdId, params) : StatusCodes.ServiceUnavailable;
-    })
+    mediaPlayer.build(
+      client,
+      async (entity, cmdId, params) => {
+        const target = clientFor(entity.id);
+        return target ? mediaPlayer.handleCommand(target, cmdId, params) : StatusCodes.ServiceUnavailable;
+      },
+      clientFor
+    )
   );
   api.addAvailableEntity(
     remote.build(client, async (entity, cmdId, params) => {

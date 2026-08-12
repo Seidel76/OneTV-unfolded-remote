@@ -413,7 +413,14 @@ async function handleCommand(client, cmdId, params = {}) {
   return StatusCodes.Ok;
 }
 
-function build(client, cmdHandler) {
+/**
+ * @param client        appareil courant
+ * @param cmdHandler    gestionnaire de commandes
+ * @param resolveClient résout le client À CHAQUE APPEL depuis l'id de l'entité. Une
+ *                      capture du `client` figerait la langue et le catalogue au premier
+ *                      setup : l'entité configurée, elle, n'est jamais republiée.
+ */
+function build(client, cmdHandler, resolveClient) {
   const entity = new MediaPlayer(entityId(client), client.name, {
     features: FEATURES,
     attributes: attributes(client),
@@ -422,7 +429,8 @@ function build(client, cmdHandler) {
   });
   // `browse` est une MÉTHODE à surcharger (pas une option du constructeur) : la lib
   // appelle `entity.browse(options)` à chaque écran du navigateur.
-  entity.browse = (options) => browseMedia.browse(client, options);
+  entity.browse = (options) =>
+    browseMedia.browse((resolveClient && resolveClient(entity.id)) || client, options);
   return entity;
 }
 

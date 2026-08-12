@@ -19,6 +19,7 @@ const pending = new Map();
 // Choisi au premier écran, appliqué quel que soit le chemin ensuite (découverte,
 // sélection dans la liste, saisie manuelle de repli).
 let favoritesOnly = false;
+let language = "en";
 
 /**
  * @param {object} msg message de setup
@@ -47,6 +48,7 @@ async function start(msg, devices, onDeviceAdded) {
   const allChannels =
     data.all_channels_as_sources === true || String(data.all_channels_as_sources) === "true";
   favoritesOnly = !allChannels;
+  language = String(data.language || "en").toLowerCase() === "fr" ? "fr" : "en";
 
   if (host) {
     return finish({ host, port, apiKey, deviceId: null }, devices, onDeviceAdded);
@@ -139,7 +141,7 @@ async function userData(msg, devices, onDeviceAdded) {
 }
 
 async function finish({ host, port, apiKey, deviceId }, devices, onDeviceAdded) {
-  const client = new OneTVClient({ host, port, apiKey, deviceId, favoritesOnly });
+  const client = new OneTVClient({ host, port, apiKey, deviceId, favoritesOnly, language });
   try {
     // `/api/v1/info` est public : il valide l'adresse ET publie la clé d'API.
     await client.fetchInfo();
@@ -158,7 +160,8 @@ async function finish({ host, port, apiKey, deviceId }, devices, onDeviceAdded) 
     port,
     apiKey: client.apiKey,
     deviceId: client.deviceId,
-    favoritesOnly
+    favoritesOnly,
+    language
   };
   devices.add(config);
   await onDeviceAdded(config, client.favorites);
