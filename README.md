@@ -1,6 +1,6 @@
 # OneTV integration for Unfolded Circle Remote Two / Three
 
-Control the **OneTV Connect** app running on an Apple TV, iPhone or iPad from an
+Control the **OneTV Connect** app running on an Apple TV from an
 [Unfolded Circle](https://www.unfoldedcircle.com/) remote: zapping, transport controls,
 favourites, and a full media browser with live EPG, movies and TV shows.
 
@@ -80,8 +80,9 @@ Default physical mapping:
 
 - An Unfolded Circle **Remote Two** or **Remote Three**, firmware **2.2.0 or newer**
   (custom integration upload landed in 2.2.0).
-- **OneTV Connect** running on an Apple TV, iPhone or iPad on the same network, with its
-  HTTP remote API enabled.
+- **OneTV Connect** running on an **Apple TV** on the same network, with its HTTP remote
+  API enabled. *(Android TV support is coming; the driver targets the same API, so it
+  should work there as soon as the app ships it.)*
 - **Node.js 20+** and `npm` on the machine that builds the archive — not on the remote.
 
 ---
@@ -204,8 +205,9 @@ Measured on real hardware, not assumed.
 - **Volume is the playback engine's**, not the TV's.
 - **No duration while watching live.** There, `duration` reports the depth of the timeshift
   buffer (~12 s); showing it would render a nonsensical progress bar.
-- **Push updates are tvOS-only.** iOS answers `501` on the event stream and falls back to a
-  5 s poll.
+- **Push updates depend on the app's event stream.** Apple TV serves it, so state changes
+  arrive instantly. A device that answers `501` there falls back to a 5 s poll — nothing
+  breaks, updates are just less immediate.
 - **Decorative playlist separators** (`---●★| CINEMA |★●---`) are filtered out of the
   sources and of the browser.
 - `/api/v1/favorites` only exists in recent app builds; on older ones the list stays empty

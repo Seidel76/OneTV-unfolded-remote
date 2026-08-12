@@ -6,7 +6,7 @@ favourite channels one button press away.
 
 **Before you start**
 
-- OneTV Connect installed on an Apple TV, iPhone or iPad
+- OneTV Connect installed on an **Apple TV** (Android TV support is coming)
 - An Unfolded Circle Remote Two or Three on firmware **2.2.0 or newer**
   (*Settings → About* on the remote)
 - A computer on the same network with **Node.js 20+** installed
@@ -29,7 +29,7 @@ cd OneTV-unfolded-remote
 You should see:
 
 ```
-→ artifacts/uc-intg-onetv-0.1.0.tar.gz (268K)
+→ artifacts/uc-intg-onetv-0.1.1.tar.gz (268K)
 ```
 
 There is no compiler and no Docker involved: the remote runs Node.js, so the script just

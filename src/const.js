@@ -5,8 +5,8 @@
 const ZEROCONF_TYPE = "noopytv";
 const DEFAULT_PORT = 8765;
 
-// Sondage de repli. Le flux SSE (tvOS) pousse les changements ; iOS répond 501 et n'a
-// que le sondage. On reste large quand le push tient, serré sinon.
+// Sondage de repli. Quand le flux SSE de l'app pousse les changements, on espace ; un
+// appareil sans flux (501) n'a que le sondage, on resserre.
 const POLL_INTERVAL_PUSH_MS = 30000;
 const POLL_INTERVAL_POLL_MS = 5000;
 

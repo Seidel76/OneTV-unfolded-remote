@@ -1,6 +1,6 @@
 {
   "name": "uc-intg-onetv",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "OneTV Connect integration driver for Unfolded Circle Remote Two/Three",
   "main": "src/driver.js",
   "scripts": {

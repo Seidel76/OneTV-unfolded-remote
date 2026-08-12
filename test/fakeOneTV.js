@@ -216,7 +216,8 @@ const server = http.createServer((req, res) => {
     case "/api/v1/now":
       return json(res, NOW);
     case "/api/v1/events/stream":
-      // iOS répond 501 : on couvre ce chemin, le driver doit retomber sur le sondage.
+      // Appareil sans flux d'événements : on couvre ce chemin, le driver doit retomber
+      // sur le sondage.
       return json(res, { error: "not implemented" }, 501);
     default:
       return json(res, { error: "not found" }, 404);

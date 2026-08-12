@@ -283,7 +283,8 @@ class OneTVClient {
   }
 
   /**
-   * Flux `/api/v1/events/stream` (tvOS ; iOS répond 501 → on abandonne le push).
+   * Flux `/api/v1/events/stream` — servi par l'app Apple TV. Un appareil qui répond 501
+   * n'a pas de push : on abandonne le flux et le sondage prend le relais.
    *
    * ⚠️ Ne JAMAIS déduire « connecté » d'un event `snapshot` : le serveur étiquette son
    * état initial selon la situation. La connexion HTTP elle-même est le seul signal.
@@ -302,7 +303,7 @@ class OneTVClient {
           });
 
           if (response.status === 501) {
-            console.info(`[onetv] ${this.host}: pas de SSE (iOS), sondage seul`);
+            console.info(`[onetv] ${this.host}: pas de flux d'événements, sondage seul`);
             this.pushConnected = false;
             return;
           }

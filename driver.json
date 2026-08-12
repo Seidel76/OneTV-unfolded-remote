@@ -1,6 +1,6 @@
 {
   "driver_id": "onetv",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "min_core_api": "0.20.0",
   "name": {
     "en": "OneTV",
@@ -8,8 +8,8 @@
   },
   "icon": "uc:tv",
   "description": {
-    "en": "Control the OneTV Connect app running on Apple TV or iOS: zapping, transport, sources, audio and subtitle tracks.",
-    "fr": "Pilote l'application OneTV Connect sur Apple TV ou iOS : zapping, transport, sources, pistes audio et sous-titres."
+    "en": "Control the OneTV Connect app running on Apple TV: zapping, transport, favourites, and a media browser with live EPG, movies and TV shows.",
+    "fr": "Pilote l'application OneTV Connect sur Apple TV : zapping, transport, favoris, et un navigateur de médias avec EPG, films et séries."
   },
   "developer": {
     "name": "OneTV Connect",
